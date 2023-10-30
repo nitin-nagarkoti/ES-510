@@ -1,36 +1,32 @@
-% Solves the 1D heat equation with an explicit finite difference scheme
-% 
-% From Thorsten Becker's webpage
-%
-
 clear all
 close all
 
-L = 100; % Length of modeled domain [m]
+% Physical parameters
+L = 100; % Length of dyke [m]
 Tmagma = 1200; % Temperature of magma [C]
 Trock = 300; % Temperature of country rock [C]
 kappa = 1e-6; % Thermal diffusivity of rock [m2/s]
 W = 5; % Width of dike [m]
 day = 3600*24; % # seconds per day
-dt = 10*day; % Timestep [s]
+dt = 9*day; % Timestep [s], kitne time ke interval pe changes find krna hai
+
 
 % Numerical parameters
-nx = 108; % Number of gridpoints in x-direction
+nx = 201; % Number of gridpoints in x-direction
 nt = 100; % Number of timesteps to compute
 dx = L/(nx-1); % Spacing of grid
 x = -L/2:dx:L/2;% Grid
-
-
+alpha = kappa*dt/(dx*dx)
 % Setup initial temperature profile
 T = ones(size(x))*Trock;
 T(find(abs(x)<=W/2)) = Tmagma;
-C = (kappa*dt)/(dx^2)
+
 time = 0;
 for n=1:nt % Timestep loop
     % Compute new temperature
     Tnew = zeros(1,nx);
     for i=2:nx-1
-        Tnew(i) = T(i) + C*T(i-1) + (1-2*C)*T(i) + C*T(i+1);
+        Tnew(i) = T(i) + alpha*(T(i+1)-2*T(i)+T(i-1))
     end
     % Set boundary conditions
     Tnew(1) = T(1);
